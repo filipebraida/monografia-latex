@@ -33,9 +33,10 @@
 
 \RequirePackage{color}
 \RequirePackage{listings}
+\RequirePackage{enumitem}
 
-\RequirePackage[alf]{abntex2cite}	% Citações padrão ABNT
-\RequirePackage{microtype} 			% para melhorias de justificação
+\RequirePackage[alf]{abntex2cite}   % Citações padrão ABNT
+\RequirePackage{microtype}          % para melhorias de justificação
 
 \RequirePackage{booktabs}           % comandos extras para as tabelas
 
@@ -43,10 +44,12 @@
 
 \RequirePackage{csquotes}           % citações de frases
 
+\RequirePackage[printonlyused]{acronym}   % criar lista de acrônimos 
+\RequirePackage{ccaption}                 % adicionar legendas numeradas e não numeradas (ex. fonte da imagem)
+
 \newcommand*{\eg}{\textit{e.g.}\@\xspace}
 \newcommand*{\ie}{\textit{i.e.}\@\xspace}
 
-%==============================================================================
 % Códigos
 %==============================================================================
 \newcommand{\codejava}[3]{
@@ -121,15 +124,17 @@
   \expandafter\gdef\csname @author\alph{ii@authorcount}thanks\endcsname{#2}
 }
 % Orientador
-\DeclareRobustCommand{\advisor}[3][]{
+\DeclareRobustCommand{\advisor}[4][1]{
   \gdef\@advisorname{#2}
   \gdef\@advisororigin{#3}
+  \gdef\@advisorgender{#4}
   \gdef\@advisor{#1~#2}
 }
 %Co-orientador
-\DeclareRobustCommand{\coadvisor}[3][]{
+\DeclareRobustCommand{\coadvisor}[4][1]{
   \gdef\@coadvisorname{#2}
   \gdef\@coadvisororigin{#3}
+  \gdef\@coadvisorgender{#4}
   \gdef\@coadvisor{#1~#2}
 }
 % Banca - max = 3
@@ -239,8 +244,8 @@
   \@ifundefined{@curso}{}{\MakeUppercase{\csname \@curso\endcsname}\\}%
 }
 \newcommand{\titlepageadvisorinfo}{%
-  \@ifundefined{@advisor}{}{\vfill\@advisor\\\advisorname}
-  \@ifundefined{@coadvisor}{}{\\[6ex]\@coadvisor\\\coadvisorname}
+  \@ifundefined{@advisor}{}{\vfill\@advisor\\\ifthenelse{\equal{\@advisorgender}{a}}{\advisoraname}{\advisorname}}
+  \@ifundefined{@coadvisor}{}{\\[6ex]\@coadvisor\\\ifthenelse{\equal{\@coadvisorgender}{a}}{\coadvisoraname}{\coadvisorname}}
 }
 
 %=====================================================================
@@ -268,7 +273,7 @@
     \bigskip
 
     \noindent
-    Projeto Final de Curso submetido ao Departamento de Ci\^encia da Computa\c{c}\~ao do Instituto de Multidisciplinar da Universidade Federal Rural do Rio de Janeiro como parte dos requisitos necess\'arios para obten\c{c}\~ao do grau de Bacharel em Ci\^encia da Computa\c{c}\~ao.
+    Projeto Final de Curso submetido ao Departamento de Ci\^encia da Computa\c{c}\~ao do Instituto Multidisciplinar da Universidade Federal Rural do Rio de Janeiro como parte dos requisitos necess\'arios para obten\c{c}\~ao do grau de Bacharel em Ci\^encia da Computa\c{c}\~ao.
 
     \noindent
     Apresentado por:
@@ -350,7 +355,8 @@
     \normalsize
 
     \noindent
-    Orientador: \@advisorname\\
+    \@ifundefined{@advisorgender}{}{\ifthenelse{\equal{\@advisorgender}{a}}{\advisoraname}{\advisorname}}{:}
+    \@advisorname\\
     \@advisororigin\\
 
     \renewcommand{\baselinestretch}{1.5}
@@ -472,56 +478,31 @@
 % Definição do conteúdo de listas de abreviaturas e símbolos
 %=====================================================================
 \newcommand{\makeabrevpage}[1]{
-  \begin{listofabbrv}{XXXXXX}
-    #1
-  \end{listofabbrv}
-  \pagebreak
-}{}
-
-\newcommand{\makesymbolspage}[1]{
-  \begin{listofsymbols}{XXXXXX}
-    #1
-  \end{listofsymbols}
-  \pagebreak
-}{}
-
-%=====================================================================
-% Definição das listas de abreviaturas e siglas e de símbolos
-%=====================================================================
-\newenvironment{listofabbrv}[1]{
   \chapter*{\listabbrvname}
   \addcontentsline{toc}{chapter}{\listabbrvname}
-  \begin{list}{\textbf{??}}{
-    \settowidth{\labelwidth}{#1}
-    \setlength{\labelsep}{1em}
-    \setlength{\itemindent}{0mm}
-    \setlength{\leftmargin}{\labelwidth}
-      \addtolength{\leftmargin}{\labelsep}
-    \setlength{\rightmargin}{0mm}
-    \setlength{\itemsep}{.1\baselineskip}
-    \renewcommand{\makelabel}[1]{\makebox[\labelwidth][l]{##1}}
-  }
+  #1
+  \pagebreak
 }
-{
-  \end{list}
-}
-\newenvironment{listofsymbols}[1]{
+
+\newcommand{\makesymbolspage}[1]{
   \chapter*{\listsymbolname}
-  \addcontentsline{toc}{chapter}{\listsymbolname}
-  \begin{list}{\textbf{??}}{
-    \settowidth{\labelwidth}{#1}
-    \setlength{\labelsep}{1em}
-    \setlength{\itemindent}{0mm}
-    \setlength{\leftmargin}{\labelwidth}
-      \addtolength{\leftmargin}{\labelsep}
-    \setlength{\rightmargin}{0mm}
-    \setlength{\itemsep}{.1\baselineskip}
-    \renewcommand{\makelabel}[1]{\makebox[\labelwidth][l]{##1}}
-  }
-}
-{
-  \end{list}
-}
+  \addcontentsline{toc}{chapter}{\listsymbolname}  
+  #1
+  \pagebreak
+}{}
+
+%=====================================================================
+% Ambiente para alineas e e subalineas (incisos)
+% ABNT NBR 6024/2012 - 4.2 e 4.3
+%=====================================================================
+\newlist{alineas}{enumerate}{2}
+\setlist[alineas,1]{label={\alph*)},topsep=0pt,itemsep=0pt,leftmargin=\parindent+\labelwidth-\labelsep}%
+\setlist[alineas,2]{label={--},topsep=0pt,itemsep=0pt,leftmargin=*}
+\newlist{subalineas}{enumerate}{1}
+\setlist[subalineas,1]{label={--},topsep=0pt,itemsep=0pt,leftmargin=*}%
+\newlist{incisos}{enumerate}{1}
+\setlist[incisos,1]{label={--},topsep=0pt,itemsep=0pt,leftmargin=*}%
+% ---
 
 %=====================================================================
 % Definição do conteúdo da tabela de conteúdo
@@ -538,3 +519,9 @@
   \addcontentsline{toc}{chapter}{\bibname}
   \bibliography{#1}
 }{}
+
+%=====================================================================
+% Teoremas, Definições
+%=====================================================================
+\newtheorem{definition}{Definição}
+\newtheorem{theorem}{Teorema}[section]

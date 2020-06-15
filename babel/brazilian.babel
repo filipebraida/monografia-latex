@@ -28,7 +28,9 @@
   \def\lstlistingname{C{\'o}digo}%
   \def\tablename{Tabela}%
   \def\advisorname{Orientador}%
+  \def\advisoraname{Orientadora}%
   \def\coadvisorname{Co-orientador}%
+  \def\coadvisoraname{Co-orientadora}%
   \def\listabbrvname{Lista de Abreviaturas e Siglas}%
   \def\listsymbolname{Lista de S{\'i}mbolos}%
   \def\lstlistlistingname{Lista de C{\'o}digos}%
@@ -36,6 +38,7 @@
   \def\keywordsname{Palavras-chave}%
   \def\byname{por}%
   \def\coordname{Coordenador do Curso}%
+  \def\coordaname{Coordenadora do Curso}%
 }
 \@namedef{datebrazilian}{%
   \def\monthname{%
